@@ -20,7 +20,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser('classOnline'));//签名cookies
 app.use(express.static(path.join(__dirname, 'public')));//视频图片都在这里了
 //过滤器，没有cookie将被过滤
-app.use(filterRoute);
+//app.use(filterRoute);
 //其他,没有被过滤的将进入这里
 app.use('/users', usersRouter);
 app.use('/class', classRouter);

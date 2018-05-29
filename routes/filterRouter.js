@@ -5,7 +5,7 @@ var constans= require("../util/Constants")
 /* 过滤没有cookie的 */
 router  = function(req, res, next) {
   
-    if(req.signedCookies.userId){//有userId
+    if(  req.signedCookies.userId){//有userId
       
       next();
      

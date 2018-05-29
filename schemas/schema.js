@@ -36,7 +36,7 @@ var chapterSchema = new Schema({
     des: { type: String },
     name: { type: String },
     subChapters:[{type:mongoose.SchemaTypes.ObjectId,ref:"subChapterTable"}],
-    videoId:{type:mongoose.SchemaTypes.ObjectId,ref:"videoTable"}
+   
 
 },{ collection: 'chapterTable' });
 var chapterModel = mongoose.model('chapterTable', chapterSchema);
@@ -65,7 +65,8 @@ var videoSchema = new Schema({
     stars: { type: Number },
     url: { type: String },
     name: { type: String },
-    chapterId: { type: mongoose.SchemaTypes.ObjectId ,ref:"chapterTable"},
+    shortcut:{type: String},
+    classId: { type: mongoose.SchemaTypes.ObjectId ,ref:"classTable"},
     videoCommentsId:[{ type: mongoose.SchemaTypes.ObjectId ,ref:"videoCommentTable"}]
 },{ collection: 'videoTable' });
 var videoModel = mongoose.model('videoTable', videoSchema);
@@ -77,6 +78,7 @@ var classSchema = new Schema({
     stars: { type: Number },
     name: { type: String },
     des: { type: String },
+    imgUrl:{type:String},
     chapters:[{type:mongoose.SchemaTypes.ObjectId,ref:"chatperTable"}]
 },{ collection: 'classTable' });
 
