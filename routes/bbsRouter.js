@@ -380,4 +380,46 @@ router.post('/submitNote', function (req, res, next){
     }
 
 })
+
+
+
+/**
+ * 
+ * 
+ * 
+ * 
+*/
+router.post('/messageBox', function (req, res, next){
+    let params = req.body;
+    if (params == null || params.userId == undefined || params.des == undefined  ) {
+        res.json({
+            result: false,
+            struct: [],
+            des: "no userId or des "
+        })
+    } else {
+        //
+        let newMessageboxModel = new schemas.messageboxModel({
+                userId:params.userId ,
+                des:params.des 
+        });
+        newMessageboxModel.save(function(cerror,thisNoteModel){
+            if(cerror){
+                res.json({
+                    result: false,
+                    des: cerror.message,
+                });
+            }else {
+                res.json({
+                    result: true,
+                    des: "messagebox submit successful",
+                });
+            }
+
+        })
+         
+    }
+
+})
+
 module.exports = router;

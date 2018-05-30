@@ -109,7 +109,7 @@ var imgModel = mongoose.model('imgTable', imgSchema);
 
 var messageboxSchema = new Schema({
     _id: { type: mongoose.SchemaTypes.ObjectId ,auto:true},
-    userId: { type: mongoose.SchemaTypes.ObjectId },
+    userId: { type: mongoose.SchemaTypes.ObjectId ,ref:"userTable"},
     des: { type: String },
 
 },{ collection: 'MessageBoxTable' });
