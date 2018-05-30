@@ -104,6 +104,8 @@ var imgSchema = new Schema({
     des: { type: String },
 
 },{ collection: 'imgTable' });
+var imgModel = mongoose.model('imgTable', imgSchema);
+
 
 var messageboxSchema = new Schema({
     _id: { type: mongoose.SchemaTypes.ObjectId ,auto:true},
@@ -111,16 +113,19 @@ var messageboxSchema = new Schema({
     des: { type: String },
 
 },{ collection: 'MessageBoxTable' });
+var messageboxModel = mongoose.model('MessageBoxTable', messageboxSchema);
 
 var noteSchema = new Schema({
     _id: { type: mongoose.SchemaTypes.ObjectId ,auto:true},
     des: { type: String },
     title: { type: String },
-    subject: { type: String },
+    subject: [{ type: String }],
+    userId:{type: mongoose.SchemaTypes.ObjectId,ref:"userTable"},
+    commentList:[{type: mongoose.SchemaTypes.ObjectId,ref:"CommentTable"}]
 
 },{ collection: 'noteTable' });
 
-
+var noteModel = mongoose.model('noteTable', noteSchema);
 
 
 var commentSchema = new Schema({
@@ -131,7 +136,7 @@ var commentSchema = new Schema({
     stars: { type: Number },
     noteId: { type: mongoose.SchemaTypes.ObjectId },
 },{ collection: 'CommentTable' });
-
+var commentModel = mongoose.model('CommentTable', commentSchema);
 
 
 var subjectSchema = new Schema({
@@ -140,7 +145,7 @@ var subjectSchema = new Schema({
     name: { type: String },
     stars: { type: Number },
 },{ collection: 'subjectTable' });
-
+var subjectModel = mongoose.model('subjectTable', subjectSchema);
 
 //-------bbs--------
 
@@ -180,5 +185,14 @@ module.exports = {
     chapterModel:chapterModel,
     subChapterModel:subChapterModel,
     videoModel:videoModel,
-    videoCommentModel:videoCommentModel
+    videoCommentModel:videoCommentModel,
+
+    imgModel:imgModel,
+    messageboxModel:messageboxModel,
+    subjectModel:subjectModel,
+    commentModel:commentModel,
+    noteModel:noteModel,
+
+
+    
 };

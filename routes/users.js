@@ -49,22 +49,44 @@ router.post('/register', function(req, res, next) {
   }else {
     //查询
     var userModel = new schemas.userModel({ userName: params.userName,password:params.password,imgUrl:params.imgUrl });
-    userModel.save(function(error,result){
-      if(error){
+
+    schemas.userModel.findOne({
+        userName: params.userName
+    },function(err,lastOne){
+      if(err){
         res.json({
           result:false,
-          des:error,
-        });
-      }else {
-    
-        res.json({
-          result:true,
-          des:"success register",
+          des:err.message,
           
         });
+      }else if(lastOne){
+        //有了
+        res.json({
+          result:false,
+          des:"alreadey registered",
+          
+        });
+      }else {
+          //没有
+        userModel.save(function(error,result){
+          if(error){
+            res.json({
+              result:false,
+              des:error,
+            });
+          }else {
+        
+            res.json({
+              result:true,
+              des:"success register",
+              
+            });
+          }
+         
+        })
       }
-     
     })
+    
 
    
   }

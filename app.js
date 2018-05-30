@@ -7,6 +7,7 @@ var logger = require('morgan');
 var filterRoute = require('./routes/filterRouter');
 var usersRouter = require('./routes/users');
 var classRouter = require('./routes/classRouter');
+var bbsRouter = require('./routes/bbsRouter');
 var app = express();
 
 
@@ -24,7 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));//视频图片都在这�
 //其他,没有被过滤的将进入这里
 app.use('/users', usersRouter);
 app.use('/class', classRouter);
-
+app.use('/bbs', bbsRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
  
