@@ -95,6 +95,7 @@ classSchema.statics.findClassById  = function(id,callback){
 var classModel = mongoose.model('classTable', classSchema);
 //--------------课程--------------
 
+//-------bbs--------
 
 var imgSchema = new Schema({
     _id: { type: mongoose.SchemaTypes.ObjectId ,auto:true},
@@ -131,12 +132,17 @@ var commentSchema = new Schema({
     noteId: { type: mongoose.SchemaTypes.ObjectId },
 },{ collection: 'CommentTable' });
 
+
+
 var subjectSchema = new Schema({
     _id: { type: mongoose.SchemaTypes.ObjectId ,auto:true},
     des: { type: String },
     name: { type: String },
     stars: { type: Number },
 },{ collection: 'subjectTable' });
+
+
+//-------bbs--------
 
 var userSchema = new Schema({
     _id: { type: mongoose.SchemaTypes.ObjectId ,auto:true},

@@ -271,17 +271,33 @@ router.post('/commentToVideo', function (req, res, next) {
         })
     } else {
         let thisComentModel = new schemas.videoCommentModel({ userId: params.userId, videoId: params.videoId, des: params.des, stars: 1 });
-        thisComentModel.save(function (error) {
+        thisComentModel.save(function (error,newComment) {
             if (error) {
                 res.json({
                     result: false,
                     des: error.message,
                 });
             } else {
-                res.json({
-                    result: true,
-                    des: "comment successfully!",
+               
+                schemas.videoModel.findOneAndUpdate({_id: params.videoId}, {$push: {videoCommentsId: newComment._id}}).then((result)=>{
+                    if(result){
+                        res.json({
+                            result: true,
+                            des: "comment successfully!",
+                        });
+                    }
+
+                }).catch((error)=>{
+                    res.json({
+                        result: false,
+                        des: error.message,
+                    });
+
+
                 });
+                //还得更新video
+
+               
             }
         })
     }
