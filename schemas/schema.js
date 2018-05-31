@@ -120,6 +120,7 @@ var noteSchema = new Schema({
     des: { type: String },
     title: { type: String },
     subject: [{ type: String }],
+    stars:{ type: Number },
     userId:{type: mongoose.SchemaTypes.ObjectId,ref:"userTable"},
     commentList:[{type: mongoose.SchemaTypes.ObjectId,ref:"CommentTable"}]
 

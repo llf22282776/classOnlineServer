@@ -43,52 +43,52 @@ var schemas = require("../schemas/schema");
     "des": "success getList"
 }
 */
-router.post('/searchNoteList', function (req, res, next){
+router.post('/searchNoteList', function (req, res, next) {
 
-   let params = req.body;
-    if (params == null || params.noteName == undefined ) {
+    let params = req.body;
+    if (params == null || params.noteName == undefined) {
         res.json({
             result: false,
             struct: [],
             des: "no noteName"
         })
     } else {
-        
-        schemas.noteModel.find({title: { $regex: params.noteName, $options: 'i' } }).populate({
+
+        schemas.noteModel.find({ title: { $regex: params.noteName, $options: 'i' } }).populate({
             path: "subject",
             model: 'subjectTable',
-            select:"name"
+            select: "name"
 
         }).populate({
             path: "userId",
             model: 'userTable',
-            select:"userName imgUrl"
+            select: "userName imgUrl"
         }).populate(
-          {
-            path: "commentList",
-            model: 'CommentTable',
-            populate:{
-                path: "userId toUserId",
-                model: 'userTable',
-                select :"userName imgUrl"
+            {
+                path: "commentList",
+                model: 'CommentTable',
+                populate: {
+                    path: "userId toUserId",
+                    model: 'userTable',
+                    select: "userName imgUrl"
+                }
             }
-          }   
         ).
-        exec(function (error, results) {
-            if(error){
-                res.json({
-                    result: true,
-                    noteList: results,
-                    des:error.message
-                })    
-            }else {
-                res.json({
-                    result: true,
-                    noteList: results,
-                    des:"success getList",
-                })
-            }
-        })
+            exec(function (error, results) {
+                if (error) {
+                    res.json({
+                        result: true,
+                        noteList: results,
+                        des: error.message
+                    })
+                } else {
+                    res.json({
+                        result: true,
+                        noteList: results,
+                        des: "success getList",
+                    })
+                }
+            })
     }
 })
 /**
@@ -127,43 +127,49 @@ router.post('/searchNoteList', function (req, res, next){
     "des": "success getList"
 }
 */
-router.post('/getNoteDetail', function (req, res, next){
+router.post('/getNoteDetail', function (req, res, next) {
     let params = req.body;
-    if (params == null || params.noteId == undefined ) {
+    if (params == null || params.noteId == undefined) {
         res.json({
             result: false,
             struct: [],
             des: "no noteId"
         })
     } else {
-        
-        schemas.noteModel.findOne({_id: params.noteId }).populate({
+
+        schemas.noteModel.findOne({ _id: params.noteId }).populate({
             path: "subject",
             model: 'subjectTable',
-            select:"name"
+            select: "name"
 
         }).populate(
-          {
-            path: "commentList",
-            model: 'CommentTable',
-            populate:{
-                path: "userId toUserId",
-                model: 'userTable',
-                select :"userName imgUrl"
+            {
+                path: "commentList",
+                model: 'CommentTable',
+                populate: {
+                    path: "userId toUserId",
+                    model: 'userTable',
+                    select: "userName imgUrl"
+                }
             }
-          }   
+        ).populate(
+            {
+                path: "userId",
+                model: 'userTable',
+                select: "userName imgUrl"
+            }
         ).exec(function (error, results) {
-            if(error){
+            if (error) {
                 res.json({
                     result: false,
                     noteDetail: error.message,
-                    des:error.message
-                })    
-            }else {
+                    des: error.message
+                })
+            } else {
                 res.json({
                     result: true,
                     noteDetail: results,
-                    des:"success getList",
+                    des: "success getList",
                 })
             }
         })
@@ -188,20 +194,20 @@ router.post('/getNoteDetail', function (req, res, next){
     "des": "success getList"
 }
 */
-router.post('/searchSubjects', function (req, res, next){
-    
-    schemas.subjectModel.find({},function(error,results){
-        if(error){
+router.post('/searchSubjects', function (req, res, next) {
+
+    schemas.subjectModel.find({}, function (error, results) {
+        if (error) {
             res.json({
                 result: false,
                 subjectList: error.message,
-                des:error.message
-            })    
-        }else {
+                des: error.message
+            })
+        } else {
             res.json({
                 result: true,
                 subjectList: results,
-                des:"success getList",
+                des: "success getList",
             })
         }
     })
@@ -214,41 +220,41 @@ router.post('/searchSubjects', function (req, res, next){
  *  }
  * 
 */
-router.post('/insertSubject', function (req, res, next){
+router.post('/insertSubject', function (req, res, next) {
     let params = req.body;
-    if (params == null || params.subject == undefined ) {
+    if (params == null || params.subject == undefined) {
         res.json({
             result: false,
             struct: [],
             des: "no subject"
         })
     } else {
-        schemas.subjectModel.findOne({name:params.subject},function(error,result){
-            if(error){
+        schemas.subjectModel.findOne({ name: params.subject }, function (error, result) {
+            if (error) {
                 res.json({
                     result: false,
-                    des: "no subject"
+                    des: "already has!"
                 })
-            }else if(result){
+            } else if (result) {
                 res.json({
                     result: false,
                     des: "alread has this subject"
                 })
 
-            }else{
+            } else {
                 //保存主题
-                let thisSubjectModel = new   schemas.subjectModel({  name: params.subject ,des:"",stars:1});
-                thisSubjectModel.save(function(err,subjectTosave){
-                    if(err){
+                let thisSubjectModel = new schemas.subjectModel({ name: params.subject, des: "", stars: 1 });
+                thisSubjectModel.save(function (err, subjectTosave) {
+                    if (err) {
                         res.json({
                             result: false,
                             des: "no subject"
                         })
-                    }else {
+                    } else {
                         res.json({
-                            result: false,
-                            des: "no subject",
-                            newSubject:subjectTosave
+                            result: true,
+                            des: "successfully added ",
+                            newSubject: subjectTosave
                         })
                     }
                 });
@@ -267,10 +273,10 @@ router.post('/insertSubject', function (req, res, next){
  *      des:
  * }
 */
-router.post('/commentToNote', function (req, res, next){
+router.post('/commentToNote', function (req, res, next) {
 
- let params = req.body;
-    if (params == null || params.noteId == undefined  || params.des == undefined) {
+    let params = req.body;
+    if (params == null || params.noteId == undefined || params.des == undefined) {
         res.json({
             result: false,
             struct: [],
@@ -278,35 +284,36 @@ router.post('/commentToNote', function (req, res, next){
         })
     } else {
         let newComment = new schemas.commentModel({
-            userId:params.userId,
-            toUserId:params.toUserId ==undefined ? params.userId:params.toUserId,
-            des:params.des,
-            noteId:params.noteId
+            userId: params.userId,
+            toUserId: params.toUserId == undefined ? params.userId : params.toUserId,
+            des: params.des,
+            noteId: params.noteId,
+            stars: 0,
         });
-        newComment.save(function(cerror,thisnewComment){
-            if(cerror){
+        newComment.save(function (cerror, thisnewComment) {
+            if (cerror) {
                 res.json({
                     result: false,
                     des: cerror.message,
                 });
-            }else if(thisnewComment){
-                schemas.noteModel.findOneAndUpdate({_id: params.noteId}, {$push: {commentList: thisnewComment._id}}).then((result)=>{
-                    if(result){
+            } else if (thisnewComment) {
+                schemas.noteModel.findOneAndUpdate({ _id: params.noteId }, { $push: { commentList: thisnewComment._id } }).then((result) => {
+                    if (result) {
                         res.json({
                             result: true,
                             des: "comment successfully!",
                         });
                     }
-        
-                }).catch((error)=>{
+
+                }).catch((error) => {
                     res.json({
                         result: false,
                         des: error.message,
                     });
-        
-        
+
+
                 });
-            }else {
+            } else {
                 res.json({
                     result: false,
                     des: "save failed",
@@ -314,8 +321,8 @@ router.post('/commentToNote', function (req, res, next){
             }
 
         })
-         
-     
+
+
 
 
 
@@ -323,18 +330,18 @@ router.post('/commentToNote', function (req, res, next){
 })
 
 
-    
+
 /**
  * 上传图片
  * 
  * 
 */
-router.post('/submitImg', function (req, res, next){
-    
+router.post('/submitImg', function (req, res, next) {
+
 
 })
 
-    
+
 /**
  * 发表帖子
  * {
@@ -345,9 +352,9 @@ router.post('/submitImg', function (req, res, next){
  * }
  * 
 */
-router.post('/submitNote', function (req, res, next){
+router.post('/submitNote', function (req, res, next) {
     let params = req.body;
-    if (params == null || params.userId == undefined || params.des == undefined  || params.subjects == undefined) {
+    if (params == null || params.userId == undefined || params.des == undefined || params.subjects == undefined) {
         res.json({
             result: false,
             struct: [],
@@ -356,19 +363,20 @@ router.post('/submitNote', function (req, res, next){
     } else {
         //
         let newNoteModel = new schemas.noteModel({
-            title:params.title,
-            userId:params.userId,
-            des:params.des,
-            subject:[...params.subjects],
-            commentList:[]
+            title: params.title,
+            userId: params.userId,
+            des: params.des,
+            subject: [...params.subjects],
+            commentList: [],
+            stars: 0
         });
-        newNoteModel.save(function(cerror,thisNoteModel){
-            if(cerror){
+        newNoteModel.save(function (cerror, thisNoteModel) {
+            if (cerror) {
                 res.json({
                     result: false,
                     des: cerror.message,
                 });
-            }else {
+            } else {
                 res.json({
                     result: true,
                     des: "node submit successful",
@@ -376,7 +384,7 @@ router.post('/submitNote', function (req, res, next){
             }
 
         })
-         
+
     }
 
 })
@@ -385,13 +393,17 @@ router.post('/submitNote', function (req, res, next){
 
 /**
  * 
+ * {
+ *  userId:
+ *  des:
  * 
+ * }
  * 
  * 
 */
-router.post('/messageBox', function (req, res, next){
+router.post('/messageBox', function (req, res, next) {
     let params = req.body;
-    if (params == null || params.userId == undefined || params.des == undefined  ) {
+    if (params == null || params.userId == undefined || params.des == undefined) {
         res.json({
             result: false,
             struct: [],
@@ -400,24 +412,129 @@ router.post('/messageBox', function (req, res, next){
     } else {
         //
         let newMessageboxModel = new schemas.messageboxModel({
-                userId:params.userId ,
-                des:params.des 
+            userId: params.userId,
+            des: params.des
         });
-        newMessageboxModel.save(function(cerror,thisNoteModel){
-            if(cerror){
+        newMessageboxModel.save(function (cerror, thisMessageModel) {
+            if (cerror) {
                 res.json({
                     result: false,
                     des: cerror.message,
+                    newMsg: null
                 });
-            }else {
-                res.json({
-                    result: true,
-                    des: "messagebox submit successful",
-                });
+            } else {
+                //
+                schemas.messageboxModel.findOne({ _id: thisMessageModel._id }).populate({
+                    path: "userId",
+                    model: 'userTable',
+                    select: "userName imgUrl"
+                }
+                //去找到这个完整的信息
+                ).exec(function(err,results){
+                        if(err){
+                            res.json({
+                                result: false,
+                                des: err.message,
+                                newMsg: null
+                            });
+                        }else {
+                            //找到了
+                            res.json({
+                                result: true,
+                                des: "successfully",
+                                newMsg: results
+                            });
+
+                        }
+
+
+                })
             }
 
         })
-         
+
+    }
+
+})
+/**
+ * 获取聊天信息
+ * request:{
+ *  lastId:
+ *  type:
+ *  
+ * }
+ * 
+ * 
+*/
+router.post('/getMessageBox', function (req, res, next) {
+    let params = req.body;
+    if (params == null || params.lastId == undefined) {
+        res.json({
+            result: false,
+            messageList: [],
+            des: "no lastTime  "
+        })
+    } else {
+        //
+        if (params.lastId === "") {
+            schemas.messageboxModel.find({
+                //全部取，无条件
+            }).populate({
+                path: "userId",
+                model: 'userTable',
+                select: "userName imgUrl"
+            }).sort({
+                _id: 1
+            }).exec(function(error,results){
+                if(error){
+                    res.json({
+                        result: false,
+                        messageList: [],
+                        des:  error.message
+                    });
+                }else{
+                    res.json({
+                        result: true,
+                        messageList: results,
+                        des:  "successfully"
+                    });
+                }
+            });
+        } else {
+            schemas.messageboxModel.find({
+                _id: { $gt: params.lastId } //比最后一次id大
+            }).populate({
+                path: "userId",
+                model: 'userTable',
+                select: "userName imgUrl"
+            }).sort({
+                _id: 1 //升序
+            }).then(function (result) {
+                if (result) {
+                    res.json({
+                        result: true,
+                        messageList: result,
+                        des: "successfully"
+                    });
+                }
+
+
+            }, function (error) {
+                if(error){
+                    res.json({
+                        result: false,
+                        messageList: [],
+                        des:  error.message
+                    });
+                }
+
+
+            })
+
+        }
+
+
+
     }
 
 })
