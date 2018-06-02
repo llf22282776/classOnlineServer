@@ -2,6 +2,9 @@ var express = require('express');
 var router = express.Router();
 var app = require("../app")
 var schemas = require("../schemas/schema");
+var constants = require("../util/Constants");
+var spliteDes = constants[2];//第三个函数
+
 /**
  * 处理课程学习
  * 
@@ -271,23 +274,23 @@ router.post('/commentToVideo', function (req, res, next) {
         })
     } else {
         let thisComentModel = new schemas.videoCommentModel({ userId: params.userId, videoId: params.videoId, des: params.des, stars: 1 });
-        thisComentModel.save(function (error,newComment) {
+        thisComentModel.save(function (error, newComment) {
             if (error) {
                 res.json({
                     result: false,
                     des: error.message,
                 });
             } else {
-               
-                schemas.videoModel.findOneAndUpdate({_id: params.videoId}, {$push: {videoCommentsId: newComment._id}}).then((result)=>{
-                    if(result){
+
+                schemas.videoModel.findOneAndUpdate({ _id: params.videoId }, { $push: { videoCommentsId: newComment._id } }).then((result) => {
+                    if (result) {
                         res.json({
                             result: true,
                             des: "comment successfully!",
                         });
                     }
 
-                }).catch((error)=>{
+                }).catch((error) => {
                     res.json({
                         result: false,
                         des: error.message,
@@ -297,12 +300,149 @@ router.post('/commentToVideo', function (req, res, next) {
                 });
                 //还得更新video
 
-               
+
             }
         })
     }
 });
 
-
+/**
+ * 
+ * 获取新的课程结果
+ * 
+ * 
+*/
 /**/
+router.post('/getClassNewStruct', function (req, res, next) {
+    let params = req.body;
+    if (params == null || params.classId == undefined) {
+        res.json({
+            result: false,
+            struct: [],
+            des: "no class Id"
+        })
+    } else {
+        schemas.classModel.findOne({ _id: params.classId }).populate({
+            path: "chapters",
+            model: 'chapterTable',
+            select:"_id name classId index imgUrl"
+        }).exec(function (error, results) {
+            /**
+             * 
+             * des
+             * name
+             * chapters:{
+             *      _id:
+             *      name:
+             *      des:
+             *      index:
+             *      //imgUrl:章节内容第一个图片或者视频的第一帧
+             * }
+             * 而章节的详细信息，留着从detail里面获得
+             * 
+            */
+            if (error) {
+                //出错了
+                res.json({
+                    result: false,
+                    des: error.message,
+                    classStruct: results
+                });
+            } else if (results) {
+                res.json({
+                    result: true,
+                    classStruct: results,
+                    des:""
+                })
+
+            }
+
+           
+
+        })
+
+
+
+
+
+    }
+
+
+
+});
+
+/**
+ * 获取结构化的章节
+ * request:{
+ *  chapterId
+ * }
+ * 
+*/
+router.post('/getChapterDetail', function (req, res, next) {
+    let params = req.body;
+    if (params == null || params.chapterId == undefined) {
+        res.json({
+            result: false,
+            struct: [],
+            des: "no chapterId"
+        })
+    } else {
+        schemas.chapterModel.findOne({ _id: params.chapterId }).sort({ index: 1 }).exec(function (error, results) { //正序排序
+            /**
+             * 
+             * _id:
+             * name:
+             * des:
+             * index:
+             * 现在要对des进行分割
+             *  
+            */
+            if (error) {
+                //出错了
+                res.json({
+                    result: false,
+                    des: error.message,
+                    chapterDetail: {}
+                });
+            } else if (results!=undefined) {
+                //获得到课程了
+                let desLit = spliteDes(results.des);//获得一个分割好的字符串
+                let response = {
+                    result: true,
+                    des: "success",
+                    chapterDetail: {
+                        _id:results._id,
+                        name: results.name,
+                        index: results.index,
+                        desList: desLit
+
+                    }
+
+                }
+
+                res.json(response);
+
+
+            } else {
+                let response = {
+                    result: false,
+                    des: "null",
+                    chapterDetail: {}
+                }
+                res.json(response);
+
+            }
+
+        })
+
+
+
+
+
+    }
+
+
+
+});
+
 module.exports = router;

@@ -35,6 +35,7 @@ var chapterSchema = new Schema({
     classId: { type: mongoose.SchemaTypes.ObjectId ,ref:'classTable'},
     des: { type: String },
     name: { type: String },
+    imgUrl:{ type: String },
     subChapters:[{type:mongoose.SchemaTypes.ObjectId,ref:"subChapterTable"}],
    
 
