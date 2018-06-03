@@ -8,8 +8,10 @@ var filterRoute = require('./routes/filterRouter');
 var usersRouter = require('./routes/users');
 var classRouter = require('./routes/classRouter');
 var bbsRouter = require('./routes/bbsRouter');
+var uploadRouter = require('./routes/uploadRouter');
 var app = express();
-
+var multer  = require('multer')
+var upload = multer({ dest: 'uploads/' })
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -19,6 +21,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser('classOnline'));//签名cookies
+
 app.use(express.static(path.join(__dirname, 'public')));//视频图片都在这里了
 //过滤器，没有cookie将被过滤
 //app.use(filterRoute);
@@ -26,6 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')));//视频图片都在这�
 app.use('/users', usersRouter);
 app.use('/class', classRouter);
 app.use('/bbs', bbsRouter);
+app.use('/upload',uploadRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
  

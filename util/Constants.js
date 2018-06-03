@@ -14,6 +14,7 @@ const allpathReg = [
     
 
 ]
+const videoRootPath = "static/videos/";
 const regUtil={
     desReg:/(\.*\[\!)|(\!\])/ ,//用于判断内容的正在
     srcReg:/(image\(.*\))|(video\(.*\))/ //用于抽取字符的
@@ -51,5 +52,6 @@ const spliteDesOfChapter = function(des){
 }
 module.exports =[
     ifAllowWithOutCookie,allpathReg
-    ,spliteDesOfChapter
+    ,spliteDesOfChapter,
+    videoRootPath
 ]

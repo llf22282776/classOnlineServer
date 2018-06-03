@@ -325,7 +325,7 @@ router.post('/getClassNewStruct', function (req, res, next) {
         schemas.classModel.findOne({ _id: params.classId }).populate({
             path: "chapters",
             model: 'chapterTable',
-            select:"_id name classId index imgUrl"
+            select: "_id name classId index imgUrl"
         }).exec(function (error, results) {
             /**
              * 
@@ -352,12 +352,12 @@ router.post('/getClassNewStruct', function (req, res, next) {
                 res.json({
                     result: true,
                     classStruct: results,
-                    des:""
+                    des: ""
                 })
 
             }
 
-           
+
 
         })
 
@@ -404,14 +404,14 @@ router.post('/getChapterDetail', function (req, res, next) {
                     des: error.message,
                     chapterDetail: {}
                 });
-            } else if (results!=undefined) {
+            } else if (results != undefined) {
                 //获得到课程了
                 let desLit = spliteDes(results.des);//获得一个分割好的字符串
                 let response = {
                     result: true,
                     des: "success",
                     chapterDetail: {
-                        _id:results._id,
+                        _id: results._id,
                         name: results.name,
                         index: results.index,
                         desList: desLit
@@ -434,15 +434,42 @@ router.post('/getChapterDetail', function (req, res, next) {
             }
 
         })
-
-
-
-
-
     }
-
-
-
 });
+
+/**
+ * 
+ * 获取课程的list
+ * 
+*/
+router.post('/getAllClassNames', function (req, res, next) {
+    let params = req.body;
+    schemas.classModel.find({}, "name _id", (error, results) => {
+
+        if (error) {
+            res.json({
+                result: false,
+                list: [],
+                des: error
+            })
+
+        } else {
+           
+            res.json({
+                result: true,
+                list: results,
+                des: "success"
+            })
+
+        }
+    });
+
+})
+
+
+
+
+
+
 
 module.exports = router;
