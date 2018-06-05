@@ -450,7 +450,7 @@ router.post('/getAllClassNames', function (req, res, next) {
             res.json({
                 result: false,
                 list: [],
-                des: error
+                des: error.message
             })
 
         } else {
@@ -467,9 +467,288 @@ router.post('/getAllClassNames', function (req, res, next) {
 })
 
 
+/**
+ * 
+ * 点赞功能
+ * request:
+ * {
+ *      userId:
+ *      starsTarget: video/videoComment/note/noteComment/class
+ *      type:
+ *      id:
+ *  
+ * }
+ * 
+*/
+router.post('/supportThis', function (req, res, next) {
+
+    let params = req.body;
+    //定义匿名函数
+
+    if (params == null || params.userId == undefined || params.type == undefined || params.starsTarget == undefined || params.id == undefined) {
+        res.json({
+            result: false,
+            struct: [],
+            des: "no userId or type or id or starsTarget"
+        })
+    } else {
+        let type =params.type ;
+        let insert_OneSupport = function(model){
+            model.save(function(errorSaveModel,savedModel){
+                if(errorSaveModel){
+                    res.json({
+                        result: false,
+                        des: errorSaveModel.message
+                    })
+                }else {
+                    //保存成功了，写入成功了
+                    res.json({
+                        result: true,
+                        des: "successfully",
+                    })
+                }
+            })
+
+        }
+        let callback_increment = function(error_,result_){
+            if(error_){
+                //增长表里面的stars后
+                res.json({
+                    result: false,
+                    des: error_.message
+                })
+            }else {
+                //保存一个记录
+                let modelToSave =new schemas.supportoModel({
+                    userId: params.userId,
+                    starsTarget: params.starsTarget,
+                    videoId: params.id,
+                    noteId: params.id,
+                    commentId: params.id,
+                    videoCommentId:params.id,
+                    classId: params.id,
+                }); 
+                insert_OneSupport(modelToSave);
+
+            }
+        }
+        let callBack_support = function(error,result,starsTarget){
+            if(error){
+                res.json({
+                    result: false,
+                    des: error.message
+                })
+            }else if(result){
+                //有
+                res.json({
+                    result: false,
+                    des: "already has support record"
+                })
+            }else {
+                //没有,就写入
+                if(starsTarget === "video"){
+                    schemas.videoModel.findByIdAndUpdate({_id:params.id},{$inc:{stars:1}}).exec(function(error_,result_){
+                        //更改video 表
+                        callback_increment(error_,result_);
+                    })
+
+                }else if(starsTarget === "note"){
+                    schemas.noteModel.findByIdAndUpdate({_id:params.id},{$inc:{stars:1}}).exec(function(error_,result_){
+                        callback_increment(error_,result_);
+                    })
+
+                }else if(starsTarget === "noteComment"){
+                    schemas.commentModel.findByIdAndUpdate({_id:params.id},{$inc:{stars:1}}).exec(function(error_,result_){
+                        callback_increment(error_,result_);
+                    })
+
+                }else if(starsTarget === "videoComment"){
+                    schemas.videoCommentModel.findByIdAndUpdate({_id:params.id},{$inc:{stars:1}}).exec(function(error_,result_){
+                        callback_increment(error_,result_);
+                    })
+
+                }else if(starsTarget === "class"){
+                    schemas.classModel.findByIdAndUpdate({_id:params.id},{$inc:{stars:1}}).exec(function(error_,result_){
+                        callback_increment(error_,result_);
+                    })
+
+                }
+               
+    
+            }
+        }
+      
+        if(type === 'support'){
+            //是支持
+            //先判断点赞表里面有没有
+            if(params.starsTarget === "video"){
+                schemas.supportoModel.findOne({userId:params.userId,starsTarget:params.starsTarget,videoId:params.id}).exec((error,result)=>{
+                  callBack_support(error,result,params.starsTarget);
+                })
+
+            }else if(params.starsTarget === "videoComment"){
+                schemas.supportoModel.findOne({userId:params.userId,starsTarget:params.starsTarget,videoCommentId:params.id}).exec((error,result)=>{
+                    callBack_support(error,result,params.starsTarget);
+                  })
+            }else if(params.starsTarget === "note"){
+                schemas.supportoModel.findOne({userId:params.userId,starsTarget:params.starsTarget,noteId:params.id}).exec((error,result)=>{
+                    callBack_support(error,result,params.starsTarget);
+                  })
+
+            }else if(params.starsTarget === "noteComment"){
+                schemas.supportoModel.findOne({userId:params.userId,starsTarget:params.starsTarget,noteCommentId:params.id}).exec((error,result)=>{
+                    callBack_support(error,result,params.starsTarget);
+                  })
+
+            }else if(params.starsTarget === "class"){
+                schemas.supportoModel.findOne({userId:params.userId,starsTarget:params.starsTarget,noteCommentId:params.id}).exec((error,result)=>{
+                    callBack_support(error,result,params.starsTarget);
+                  })
+
+            }
+           
+
+        }else if(type == "unSupport"){
+            //不再支持
+         
+            let callback_decrement = function(error_,result_,starsTarget){
+                //更新stars的回调函数
+                if(error_){
+                    res.json({
+                        result: false,
+                        des: error_.message
+                    })
+                }else {
+                    //删除成功了
+                    res.json({
+                        result: true,
+                        des: "successfully"
+                    })
+                }
+            }
+            let callBack_unSupport = function(error,result,starsTarget){
+                if(error){
+                    res.json({
+                        result: false,
+                        des: error.message
+                    })
+                }else if(!result){
+                    //表里没有,因为现在是
+                    res.json({
+                        result: false,
+                        des: "no support record"
+                    })
+                }else {
+                    //删除support成功了，更新其他表里面的stars
+                    if(starsTarget === "video"){
+                        schemas.videoModel.findByIdAndUpdate({_id:params.id},{$inc:{stars:-1}}).exec(function(error_,result_){
+                            //更改video 表
+                            callback_decrement(error_,result_);
+                        })
+    
+                    }else if(starsTarget === "note"){
+                        //更新表
+                        schemas.noteModel.findByIdAndUpdate({_id:params.id},{$inc:{stars:-1}}).exec(function(error_,result_){
+                            callback_decrement(error_,result_);
+                        })
+    
+                    }else if(starsTarget === "noteComment"){
+                        schemas.commentModel.findByIdAndUpdate({_id:params.id},{$inc:{stars:-1}}).exec(function(error_,result_){
+                            callback_decrement(error_,result_);
+                        })
+    
+                    }else if(starsTarget === "videoComment"){
+                        schemas.videoCommentModel.findByIdAndUpdate({_id:params.id},{$inc:{stars:-1}}).exec(function(error_,result_){
+                            callback_decrement(error_,result_);
+                        })
+    
+                    }else if(starsTarget === "class"){
+                        schemas.classModel.findByIdAndUpdate({_id:params.id},{$inc:{stars:-1}}).exec(function(error_,result_){
+                            callback_decrement(error_,result_);
+                        })
+    
+                    }
+                   
+        
+                }
+            }
+
+            if(params.starsTarget === "video"){
+                schemas.supportoModel.findOneAndRemove({userId:params.userId,starsTarget:params.starsTarget,videoId:params.id}).exec((error,result)=>{
+                    callBack_unSupport(error,result,params.starsTarget);
+                })
+
+            }else if(params.starsTarget === "videoComment"){
+                schemas.supportoModel.findOneAndRemove({userId:params.userId,starsTarget:params.starsTarget,videoCommentId:params.id}).exec((error,result)=>{
+                    callBack_unSupport(error,result,params.starsTarget);
+                  })
+            }else if(params.starsTarget === "note"){
+                schemas.supportoModel.findOneAndRemove({userId:params.userId,starsTarget:params.starsTarget,noteId:params.id}).exec((error,result)=>{
+                    callBack_unSupport(error,result,params.starsTarget);
+                  })
+
+            }else if(params.starsTarget === "noteComment"){
+                schemas.supportoModel.findOneAndRemove({userId:params.userId,starsTarget:params.starsTarget,noteCommentId:params.id}).exec((error,result)=>{
+                    callBack_unSupport(error,result,params.starsTarget);
+                  })
+
+            }else if(params.starsTarget === "class"){
+                schemas.supportoModel.findOneAndRemove({userId:params.userId,starsTarget:params.starsTarget,noteCommentId:params.id}).exec((error,result)=>{
+                    callBack_unSupport(error,result,params.starsTarget);
+                  })
+
+            }
+        }
+
+    }
 
 
 
 
+})
+
+
+/**
+ * 
+ * 增加观看次数,点进去视频页面的时候才是
+ * request:
+ * {
+ *      userId:
+ *      videoId: 
+ *  
+ * }
+ * 
+*/
+router.post('/Insertviews', function (req, res, next) {
+
+    let params = req.body;
+    if (params == null || params.userId == undefined ||  params.videoId == undefined) {
+        res.json({
+            result: false,
+            des: "no userId or videoId "
+        })
+    } else {
+        //更新
+        schemas.videoModel.findByIdAndUpdate({_id:params.videoId},{$inc:{views:1}}).exec((error,result)=>{
+            if(error){
+                res.json({
+                    result: false,
+                    des: error.message
+                })
+            }else {
+                res.json({
+                    result: true,
+                    des: "inc views successfully"
+                })
+
+            }
+          })
+
+    }
+
+
+
+
+})
 
 module.exports = router;

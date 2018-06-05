@@ -73,6 +73,20 @@ var videoSchema = new Schema({
 var videoModel = mongoose.model('videoTable', videoSchema);
 
 
+var supportSchema = new Schema({
+    _id: { type: mongoose.SchemaTypes.ObjectId ,auto:true},
+    userId: { type: mongoose.SchemaTypes.ObjectId ,ref:"userTable"},
+    starsTarget: { type: String },
+    videoId: { type: mongoose.SchemaTypes.ObjectId ,ref:"videoTable"},
+    noteId: { type: mongoose.SchemaTypes.ObjectId ,ref:"noteTable"},
+    commentId: { type: mongoose.SchemaTypes.ObjectId ,ref:"CommentTable"},
+    videoCommentId: { type: mongoose.SchemaTypes.ObjectId ,ref:"videoCommentTable"},
+    classId: { type: mongoose.SchemaTypes.ObjectId ,ref:"classTable"},
+},{ collection: 'supportTable' });
+var supportoModel = mongoose.model('supportTable', supportSchema);
+
+
+
 var classSchema = new Schema({
     _id: { type: mongoose.SchemaTypes.ObjectId ,auto:true},
     videos: { type: Number },
@@ -182,13 +196,15 @@ module.exports = {
     userSchema: userSchema,
     videoCommentSchema: videoCommentSchema,
     videoSchema: videoSchema,
+    supportSchema:supportSchema,
+
     userModel: userModel,
     classModel:classModel,
     chapterModel:chapterModel,
     subChapterModel:subChapterModel,
     videoModel:videoModel,
     videoCommentModel:videoCommentModel,
-
+    supportoModel:supportoModel,
     imgModel:imgModel,
     messageboxModel:messageboxModel,
     subjectModel:subjectModel,
