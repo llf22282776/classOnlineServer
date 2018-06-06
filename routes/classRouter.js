@@ -484,7 +484,7 @@ router.post('/supportThis', function (req, res, next) {
 
     let params = req.body;
     //定义匿名函数
-
+    console.log(params)
     if (params == null || params.userId == undefined || params.type == undefined || params.starsTarget == undefined || params.id == undefined) {
         res.json({
             result: false,
@@ -498,7 +498,8 @@ router.post('/supportThis', function (req, res, next) {
                 if(errorSaveModel){
                     res.json({
                         result: false,
-                        des: errorSaveModel.message
+                        des: errorSaveModel.message,
+                        state:0,
                     })
                 }else {
                     //保存成功了，写入成功了
@@ -515,7 +516,8 @@ router.post('/supportThis', function (req, res, next) {
                 //增长表里面的stars后
                 res.json({
                     result: false,
-                    des: error_.message
+                    des: error_.message,
+                    state:0
                 })
             }else {
                 //保存一个记录
@@ -536,13 +538,15 @@ router.post('/supportThis', function (req, res, next) {
             if(error){
                 res.json({
                     result: false,
-                    des: error.message
+                    des: error.message,
+                    state:0 //出错
                 })
             }else if(result){
                 //有
                 res.json({
                     result: false,
-                    des: "already has support record"
+                    des: "already has support record",
+                    state:1 //已经有了
                 })
             }else {
                 //没有,就写入
@@ -596,12 +600,12 @@ router.post('/supportThis', function (req, res, next) {
                   })
 
             }else if(params.starsTarget === "noteComment"){
-                schemas.supportoModel.findOne({userId:params.userId,starsTarget:params.starsTarget,noteCommentId:params.id}).exec((error,result)=>{
+                schemas.supportoModel.findOne({userId:params.userId,starsTarget:params.starsTarget,commentId:params.id}).exec((error,result)=>{
                     callBack_support(error,result,params.starsTarget);
                   })
 
             }else if(params.starsTarget === "class"){
-                schemas.supportoModel.findOne({userId:params.userId,starsTarget:params.starsTarget,noteCommentId:params.id}).exec((error,result)=>{
+                schemas.supportoModel.findOne({userId:params.userId,starsTarget:params.starsTarget,classId:params.id}).exec((error,result)=>{
                     callBack_support(error,result,params.starsTarget);
                   })
 
@@ -616,7 +620,8 @@ router.post('/supportThis', function (req, res, next) {
                 if(error_){
                     res.json({
                         result: false,
-                        des: error_.message
+                        des: error_.message,
+                        state:0
                     })
                 }else {
                     //删除成功了
@@ -630,13 +635,15 @@ router.post('/supportThis', function (req, res, next) {
                 if(error){
                     res.json({
                         result: false,
-                        des: error.message
+                        des: error.message,
+                        state:0
                     })
                 }else if(!result){
                     //表里没有,因为现在是
                     res.json({
                         result: false,
-                        des: "no support record"
+                        des: "no support record",
+                        state:1
                     })
                 }else {
                     //删除support成功了，更新其他表里面的stars
@@ -653,6 +660,7 @@ router.post('/supportThis', function (req, res, next) {
                         })
     
                     }else if(starsTarget === "noteComment"){
+                        console.log("noteComment unSupport")
                         schemas.commentModel.findByIdAndUpdate({_id:params.id},{$inc:{stars:-1}}).exec(function(error_,result_){
                             callback_decrement(error_,result_);
                         })
@@ -688,12 +696,12 @@ router.post('/supportThis', function (req, res, next) {
                   })
 
             }else if(params.starsTarget === "noteComment"){
-                schemas.supportoModel.findOneAndRemove({userId:params.userId,starsTarget:params.starsTarget,noteCommentId:params.id}).exec((error,result)=>{
+                schemas.supportoModel.findOneAndRemove({userId:params.userId,starsTarget:params.starsTarget,commentId:params.id}).exec((error,result)=>{
                     callBack_unSupport(error,result,params.starsTarget);
                   })
 
             }else if(params.starsTarget === "class"){
-                schemas.supportoModel.findOneAndRemove({userId:params.userId,starsTarget:params.starsTarget,noteCommentId:params.id}).exec((error,result)=>{
+                schemas.supportoModel.findOneAndRemove({userId:params.userId,starsTarget:params.starsTarget,classId:params.id}).exec((error,result)=>{
                     callBack_unSupport(error,result,params.starsTarget);
                   })
 
