@@ -17,8 +17,8 @@ const allpathReg = [
 const videoRootPath = "static/videos/";
 const regUtil={
     desReg:/(\.*\[\!)|(\!\])/ ,//用于判断内容的正在
-    srcReg:/(image\(.*\))|(video\(.*\))/ //用于抽取字符的
-
+    srcReg:/(image\(.*?\))|(video\(.*?\))|(title\(.*?\))/ //用于抽取字符的
+ 
 }
 
 const spliteDesOfChapter = function(des){
@@ -29,7 +29,7 @@ const spliteDesOfChapter = function(des){
             content:"",
         };
         if(regUtil.srcReg.test(item)){
-            newItem.type = item.substr(0,5)==="image"?"image":"video"
+            newItem.type = item.substr(0,5)==="image"?"image": item.substr(0,5)=="video"?"video":"title";
             newItem.content = item.substring(6,item.lastIndexOf(")"))
         }else if(item === "!]" || item ==="[!" || item === null || item ==="" || item ===undefined){
             return undefined;

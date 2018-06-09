@@ -60,15 +60,43 @@ router.post('/uploadVideo', upload.array("files", 1), function (req, res, next) 
                     }
                 });
             }else {
-                res.json({
-                    result: true,
-                    des:"upload successfully",
-                    video:thisVideoToSave
+                //更新下class videos
+                schemas.classModel.findByIdAndUpdate({_id:req.body.classId},{$inc:{videos:1}}).exec(function(error_,result_){
+                    if(error_){
+                        fs.unlink(req.files[0].path, (error3) => {
+                            if (error3) {
+                                res.json({
+                                    result: false,
+                                    des: error_.message+" "+error3.message
+                                })
+                            } else {
+                                res.json({
+                                    result: false,
+                                    des:error_.message
+                                })
+                            }
+                        });
+                 
+                    }else {
+
+                        res.json({
+                            result: true,
+                            des:"upload successfully",
+                            video:thisVideoToSave
+                        })
+                    }
+                    
+
+
                 })
+
+
             }
         });
 
     }
 });
+
+
 module.exports = router;
 //相当于一个controller

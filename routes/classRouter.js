@@ -239,7 +239,7 @@ router.post('/searchVideos', function (req, res, next) {
                 select: "userName imgUrl"
 
             }
-        }).exec(function (error, results) {
+        }).sort({}).exec(function (error, results) {
             res.json({
                 result: true,
                 videoList: results
