@@ -11,8 +11,6 @@ var videoRootPath = constants[3];//第四个
 //上传video
 //里面有什么？？
 router.post('/uploadVideo', upload.array("files", 1), function (req, res, next) {
-    console.log(req.files);
-    console.log(req.body);
     if (req.body.classId === "" || req.body.classId === undefined ||req.body.name === "" ||req.body.name === undefined  ) {
         //没有
         //删除文件  
@@ -76,24 +74,17 @@ router.post('/uploadVideo', upload.array("files", 1), function (req, res, next) 
                                 })
                             }
                         });
-                 
                     }else {
-
                         res.json({
                             result: true,
                             des:"upload successfully",
                             video:thisVideoToSave
                         })
                     }
-                    
-
 
                 })
-
-
             }
         });
-
     }
 });
 

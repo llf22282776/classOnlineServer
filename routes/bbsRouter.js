@@ -53,12 +53,10 @@ router.post('/searchNoteList', function (req, res, next) {
             des: "no noteName"
         })
     } else {
-
         schemas.noteModel.find({ title: { $regex: params.noteName, $options: 'i' } }).populate({
             path: "subject",
             model: 'subjectTable',
             select: "name"
-
         }).populate({
             path: "userId",
             model: 'userTable',
@@ -322,10 +320,6 @@ router.post('/commentToNote', function (req, res, next) {
 
         })
 
-
-
-
-
     }
 })
 
@@ -517,8 +511,6 @@ router.post('/getMessageBox', function (req, res, next) {
                         des: "successfully"
                     });
                 }
-
-
             }, function (error) {
                 if(error){
                     res.json({
@@ -527,14 +519,9 @@ router.post('/getMessageBox', function (req, res, next) {
                         des:  error.message
                     });
                 }
-
-
             })
 
         }
-
-
-
     }
 
 })

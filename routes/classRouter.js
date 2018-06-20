@@ -356,18 +356,9 @@ router.post('/getClassNewStruct', function (req, res, next) {
                 })
 
             }
-
-
-
         })
 
-
-
-
-
     }
-
-
 
 });
 
@@ -419,10 +410,7 @@ router.post('/getChapterDetail', function (req, res, next) {
                     }
 
                 }
-
                 res.json(response);
-
-
             } else {
                 let response = {
                     result: false,
@@ -430,9 +418,7 @@ router.post('/getChapterDetail', function (req, res, next) {
                     chapterDetail: {}
                 }
                 res.json(response);
-
             }
-
         })
     }
 });
